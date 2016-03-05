@@ -3,10 +3,13 @@
 	<head>
 		<title>Game of life</title>
 		<script src="gameCode.js" type="text/javascript"></script>
+		<link rel="stylesheet" type="text/css" href="css/game.css" />
 	</head>
-
+	<div id="controllPanel">
+		<button onclick="gameCode.nextIteration()">
+			Next iteration
+		</button>
+	</div>
 	<canvas id="gameview" height="500" width="800"></canvas>
 
-	<button onclick="gameCode.nextIteration()">Next iteration</button>
-	<span class="Autor">Dennis Kronb&uuml;gel</span>
 </html>
