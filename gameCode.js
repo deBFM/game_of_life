@@ -33,8 +33,7 @@ var gameCode = {
 	"init" : function() {
 		this.renderer = document.getElementById("gameview").getContext("2d");
 		this.initGrid();
-		this.populateWithTestData();
-		this.clearGrid();
+		this.drawGrid();
 	},
 
 	"initGrid" : function() {
@@ -48,18 +47,26 @@ var gameCode = {
 	},
 
 	"startGame" : function() {
-		this.intervalID = window.setInterval(function() {
-			console.log("x");
-			gameCode.nextIteration();
-		}, 50);
+		if (this.intervalID === null) {
+			this.intervalID = window.setInterval(function() {
+				console.log("x");
+				gameCode.nextIteration();
+			}, 50);
+		}
 	},
 
 	"pauseGame" : function() {
-		window.clearInterval(this.intervalID);
+		if (this.intervalID !== null) {
+			window.clearInterval(this.intervalID);
+			this.intervalID = null;
+		}
 	},
 
 	"resetGame" : function() {
-		window.clearInterval(this.intervalID);
+		if (this.intervalID !== null) {
+			window.clearInterval(this.intervalID);
+			this.intervalID = null;
+		}
 		this.init();
 	},
 
@@ -159,65 +166,46 @@ var gameCode = {
 		}
 	},
 
-	"populateWithTestData" : function() {
-		gameData.grid[0][0] = new Cell(true);
-		gameData.grid[0][1] = new Cell(true);
-		gameData.grid[1][1] = new Cell(true);
-		gameData.grid[1][2] = new Cell(true);
-		gameData.grid[1][3] = new Cell(true);
-		gameData.grid[1][4] = new Cell(true);
-		gameData.grid[2][1] = new Cell(true);
-		gameData.grid[2][2] = new Cell(true);
-		gameData.grid[2][3] = new Cell(true);
-		gameData.grid[2][5] = new Cell(true);
-		gameData.grid[4][1] = new Cell(true);
-		gameData.grid[100][50] = new Cell(true);
-		gameData.grid[100][51] = new Cell(true);
-		gameData.grid[101][52] = new Cell(true);
-		gameData.grid[101][53] = new Cell(true);
-		gameData.grid[102][54] = new Cell(true);
-		gameData.grid[103][99] = new Cell(true);
-		gameData.grid[199][99] = new Cell(true);
-		gameData.grid[198][99] = new Cell(true);
-		gameData.grid[197][99] = new Cell(true);
-		gameData.grid[196][99] = new Cell(true);
-		gameData.grid[195][97] = new Cell(true);
-		gameData.grid[194][97] = new Cell(true);
-		gameData.grid[193][97] = new Cell(true);
-		gameData.grid[100][50] = new Cell(true);
-		gameData.grid[100][51] = new Cell(true);
-		gameData.grid[100][52] = new Cell(true);
-		gameData.grid[100][53] = new Cell(true);
-		gameData.grid[101][51] = new Cell(true);
-		gameData.grid[101][52] = new Cell(true);
-		gameData.grid[101][53] = new Cell(true);
-		gameData.grid[101][54] = new Cell(true);
-		gameData.grid[101][55] = new Cell(true);
-		gameData.grid[100][57] = new Cell(true);
-		gameData.grid[100][58] = new Cell(true);
-		gameData.grid[100][59] = new Cell(true);
-		gameData.grid[102][57] = new Cell(true);
-		gameData.grid[102][47] = new Cell(true);
-		gameData.grid[102][37] = new Cell(true);
-		gameData.grid[103][37] = new Cell(true);
-		gameData.grid[99][67] = new Cell(true);
-		gameData.grid[99][65] = new Cell(true);
-		gameData.grid[99][64] = new Cell(true);
-		gameData.grid[99][69] = new Cell(true);
-		gameData.grid[98][69] = new Cell(true);
-		gameData.grid[97][69] = new Cell(true);
-		gameData.grid[97][67] = new Cell(true);						
-		gameData.grid[96][67] = new Cell(true);
-		gameData.grid[95][67] = new Cell(true);
-		gameData.grid[94][67] = new Cell(true);
-		gameData.grid[93][67] = new Cell(true);
+	"populateWithTestData1" : function() {
+		gameData.grid[50][50] = new Cell(true);
+		gameData.grid[50][51] = new Cell(true);
+		gameData.grid[50][52] = new Cell(true);
+		gameData.grid[50][53] = new Cell(true);
+		gameData.grid[51][52] = new Cell(true);
+		gameData.grid[52][52] = new Cell(true);
+		gameData.grid[54][55] = new Cell(true);
+		gameData.grid[49][50] = new Cell(true);
+		gameData.grid[48][57] = new Cell(true);
+		gameData.grid[47][50] = new Cell(true);
+		gameData.grid[50][48] = new Cell(true);		
+		gameData.grid[45][50] = new Cell(true);
+		gameData.grid[47][50] = new Cell(true);
+		gameData.grid[46][50] = new Cell(true);
+		gameData.grid[49][52] = new Cell(true);
+		gameData.grid[55][52] = new Cell(true);
+		gameData.grid[57][52] = new Cell(true);
+		gameData.grid[52][52] = new Cell(true);
+		gameData.grid[60][60] = new Cell(true);
+		gameData.grid[60][61] = new Cell(true);
+		gameData.grid[60][62] = new Cell(true);
+		gameData.grid[60][65] = new Cell(true);
+		this.drawGrid();
+	},
+
+	"onCanvasClick" : function(event) {
+		var mod = Math.round(GRID_FIELD_SIZE / 2);
+		var x = Math.round((event.clientX - mod - event.target.offsetLeft) / GRID_FIELD_SIZE);
+		var y = Math.round((event.clientY - mod - event.target.offsetTop) / GRID_FIELD_SIZE);
+		gameData.grid[x][y] = new Cell(true);
+		this.drawGrid();
 	}
 };
 
 //-----------------------------
 document.addEventListener("DOMContentLoaded", function() {
+	document.getElementById("gameview").addEventListener("click", function(event) {
+		gameCode.onCanvasClick(event);
+	});
 	gameCode.init();
-	//Testdate
-
 });
 
