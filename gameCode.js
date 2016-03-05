@@ -5,15 +5,15 @@
  */
 
 //-----Configuration-----//
-const GRID_FIELD_SIZE = 10;
-const GRID_X_COUNT = 100;
+const GRID_FIELD_SIZE = 4;
+const GRID_X_COUNT = 200;
 const GRID_Y_COUNT = 100;
 
 //-----Classes-----//
 function Cell(alive) {
 	this.alive = alive;
+	this.wasAlive = alive;
 	this.nextIterationAlive = false;
-	this.wasAlive = false;
 }
 
 Cell.prototype.testFunction = function() {
@@ -26,11 +26,15 @@ var gameData = {
 };
 
 var gameCode = {
+	"onCycle" : false,
+	"intervalID" : null,
 	"renderer" : null, /* CanvasRenderingContext2D */
 
 	"init" : function() {
 		this.renderer = document.getElementById("gameview").getContext("2d");
 		this.initGrid();
+		this.populateWithTestData();
+		this.clearGrid();
 	},
 
 	"initGrid" : function() {
@@ -43,24 +47,52 @@ var gameCode = {
 		}
 	},
 
+	"startGame" : function() {
+		this.intervalID = window.setInterval(function() {
+			console.log("x");
+			gameCode.nextIteration();
+		}, 50);
+	},
+
+	"pauseGame" : function() {
+		window.clearInterval(this.intervalID);
+	},
+
+	"resetGame" : function() {
+		window.clearInterval(this.intervalID);
+		this.init();
+	},
+
 	"drawGrid" : function() {
-		this.renderer.fillStyle = "#FFFFFF";
-		this.renderer.fillRect(0, 0, GRID_X_COUNT * GRID_FIELD_SIZE, GRID_Y_COUNT * GRID_FIELD_SIZE);
-		this.renderer.fillStyle = "#8BC34A";
+		//		this.renderer.clearRect(0, 0, GRID_X_COUNT * GRID_FIELD_SIZE, GRID_Y_COUNT * GRID_FIELD_SIZE);
+		this.clearGrid();
+
 		for (var x = 0; x < GRID_X_COUNT; x++) {
 			for (var y = 0; y < GRID_Y_COUNT; y++) {
 				if (gameData.grid[x][y].alive === true) {
+					this.renderer.fillStyle = "#8BC34A";
+					this.renderer.fillRect(x * GRID_FIELD_SIZE, y * GRID_FIELD_SIZE, GRID_FIELD_SIZE, GRID_FIELD_SIZE);
+				} else if (gameData.grid[x][y].wasAlive === true) {
+					this.renderer.fillStyle = "#FFAAFF";
 					this.renderer.fillRect(x * GRID_FIELD_SIZE, y * GRID_FIELD_SIZE, GRID_FIELD_SIZE, GRID_FIELD_SIZE);
 				}
-				this.renderer.rect(x * GRID_FIELD_SIZE, y * GRID_FIELD_SIZE, GRID_FIELD_SIZE, GRID_FIELD_SIZE);
 			}
 		}
-
 		this.renderer.strokeStyle = "rgb(200,200,200)";
 		this.renderer.stroke();
 	},
 
+	"clearGrid" : function() {
+		this.renderer.clearRect(0, 0, GRID_X_COUNT * GRID_FIELD_SIZE, GRID_Y_COUNT * GRID_FIELD_SIZE);
+	},
+
 	"nextIteration" : function() {
+		if (this.onCycle) {
+			return;
+		} else {
+			this.onCycle = true;
+		}
+
 		//---Rules---
 		//Any live cell with fewer than two live neighbours dies, as if caused by under-population.
 		//Any live cell with two or three live neighbours lives on to the next generation.
@@ -75,20 +107,19 @@ var gameCode = {
 				if (cell.alive === true) {
 					if (neighborCount < 2) {
 						cell.nextIterationAlive = false;
-						console.log("cell[" + x + "][ " + y + "] die by underpop");
 						//die by underpopulation
 					} else if (neighborCount > 3) {
 						cell.nextIterationAlive = false;
-						console.log("cell[" + x + "][ " + y + "] die by overpop");
 						//die overpopulation
 					} else {
 						cell.nextIterationAlive = true;
-						console.log("cell[" + x + "][ " + y + "] still alive");
+						cell.wasAlive = true;
 					}
 				} else {
 					if (neighborCount == 3) {
 						cell.nextIterationAlive = true;
-						console.log("cell[" + x + "][ " + y + "] reborn");
+						cell.wasAlive = true;
+
 					} else {
 						cell.nextIterationAlive = false;
 						// stay dead
@@ -104,6 +135,7 @@ var gameCode = {
 		}
 
 		this.drawGrid();
+		this.onCycle = false;
 	},
 
 	"util" : {
@@ -113,7 +145,7 @@ var gameCode = {
 				for (var y = posY - 1; y <= posY + 1; y++) {
 					try {
 						var cell = gameData.grid[x][y];
-						if (posX != x && posY != y && cell && cell.alive === true) {
+						if (!(posX == x && posY == y) && cell.alive === true) {
 							counter++;
 							//console.log("cell[" + posX + "][ " + posY + "] counter Up because of(" + x + "," + y + ")");
 						}
@@ -125,6 +157,60 @@ var gameCode = {
 
 			return counter;
 		}
+	},
+
+	"populateWithTestData" : function() {
+		gameData.grid[0][0] = new Cell(true);
+		gameData.grid[0][1] = new Cell(true);
+		gameData.grid[1][1] = new Cell(true);
+		gameData.grid[1][2] = new Cell(true);
+		gameData.grid[1][3] = new Cell(true);
+		gameData.grid[1][4] = new Cell(true);
+		gameData.grid[2][1] = new Cell(true);
+		gameData.grid[2][2] = new Cell(true);
+		gameData.grid[2][3] = new Cell(true);
+		gameData.grid[2][5] = new Cell(true);
+		gameData.grid[4][1] = new Cell(true);
+		gameData.grid[100][50] = new Cell(true);
+		gameData.grid[100][51] = new Cell(true);
+		gameData.grid[101][52] = new Cell(true);
+		gameData.grid[101][53] = new Cell(true);
+		gameData.grid[102][54] = new Cell(true);
+		gameData.grid[103][99] = new Cell(true);
+		gameData.grid[199][99] = new Cell(true);
+		gameData.grid[198][99] = new Cell(true);
+		gameData.grid[197][99] = new Cell(true);
+		gameData.grid[196][99] = new Cell(true);
+		gameData.grid[195][97] = new Cell(true);
+		gameData.grid[194][97] = new Cell(true);
+		gameData.grid[193][97] = new Cell(true);
+		gameData.grid[100][50] = new Cell(true);
+		gameData.grid[100][51] = new Cell(true);
+		gameData.grid[100][52] = new Cell(true);
+		gameData.grid[100][53] = new Cell(true);
+		gameData.grid[101][51] = new Cell(true);
+		gameData.grid[101][52] = new Cell(true);
+		gameData.grid[101][53] = new Cell(true);
+		gameData.grid[101][54] = new Cell(true);
+		gameData.grid[101][55] = new Cell(true);
+		gameData.grid[100][57] = new Cell(true);
+		gameData.grid[100][58] = new Cell(true);
+		gameData.grid[100][59] = new Cell(true);
+		gameData.grid[102][57] = new Cell(true);
+		gameData.grid[102][47] = new Cell(true);
+		gameData.grid[102][37] = new Cell(true);
+		gameData.grid[103][37] = new Cell(true);
+		gameData.grid[99][67] = new Cell(true);
+		gameData.grid[99][65] = new Cell(true);
+		gameData.grid[99][64] = new Cell(true);
+		gameData.grid[99][69] = new Cell(true);
+		gameData.grid[98][69] = new Cell(true);
+		gameData.grid[97][69] = new Cell(true);
+		gameData.grid[97][67] = new Cell(true);						
+		gameData.grid[96][67] = new Cell(true);
+		gameData.grid[95][67] = new Cell(true);
+		gameData.grid[94][67] = new Cell(true);
+		gameData.grid[93][67] = new Cell(true);
 	}
 };
 
@@ -132,29 +218,6 @@ var gameCode = {
 document.addEventListener("DOMContentLoaded", function() {
 	gameCode.init();
 	//Testdate
-	gameData.grid[0][0].alive = true;
-	gameData.grid[0][1].alive = true;
-	gameData.grid[1][1].alive = true;
-	gameData.grid[1][2].alive = true;
-	gameData.grid[1][3].alive = true;
-	gameData.grid[1][4].alive = true;
-	gameData.grid[2][1].alive = true;
-	gameData.grid[2][2].alive = true;
-	gameData.grid[2][3].alive = true;
-	gameData.grid[2][5].alive = true;
-	gameData.grid[4][1].alive = true;
-	gameData.grid[4][2].alive = true;
-	gameData.grid[4][3].alive = true;
-	gameData.grid[4][4].alive = true;
-	gameData.grid[6][4].alive = true;
-	gameData.grid[6][6].alive = true;
-	gameData.grid[6][7].alive = true;
-	gameData.grid[6][8].alive = true;
-	gameData.grid[8][7].alive = true;
-	gameData.grid[8][9].alive = true;
-	gameData.grid[9][9].alive = true;
-	gameData.grid[10][9].alive = true;
-	gameData.grid[10][10].alive = true;
-});
 
+});
 
