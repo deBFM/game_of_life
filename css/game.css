@@ -1,3 +1,7 @@
+#mainwrapper {
+	margin: 0 auto;
+}
+
 #controllPanel {
 	margin-bottom: 10px;
 }
