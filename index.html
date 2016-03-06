@@ -4,40 +4,55 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Game of life</title>
+		<title>Conway's Game of Life</title>
 		<script src="gameCode.js" type="text/javascript"></script>
 		<link href="css/bootstrap.min.css" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="css/game.css" />
 	</head>
 	<div class="container theme-showcase" role="main">
 		<div>
-			<h1>"Game of life" by Dennis Kronb&uuml;gel</h1
+			<h1>Conway's Game of Life</h1>
 		</div>
 		<div id="controllPanel">
-
-			<button class="btn btn-lg btn-primary" onclick="gameCode.startGame()">
+			<button class="btn btn-primary" onclick="gameCode.startGame()">
 				Start
 			</button>
-			<button class="btn btn-lg btn-primary" onclick="gameCode.pauseGame()">
-				Pause
+			<button class="btn btn-primary" onclick="gameCode.pauseGame()">
+				Stop
 			</button>
-			<button class="btn btn-lg btn-primary" onclick="gameCode.resetGame()">
-				Reset
-			</button>
-			<button class="btn btn-lg btn-primary" onclick="gameCode.nextIteration()">
+			<button class="btn btn-primary" onclick="gameCode.nextIteration()">
 				Step
 			</button>
-			<button class="btn btn-lg btn-primary" onclick="gameCode.populateWithTestData1()">
-				Lade Testdaten
+			<button class="btn btn-primary" onclick="gameCode.resetGame()">
+				Reset
 			</button>
-		</div>
-		<canvas id="gameview" height="400" width="800"></canvas>
-		<!--
-		<div class="progress">
-			<div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
-				<span class="sr-only">60% Complete</span>
+			<div class="btn-group">
+				<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Load<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<li>
+						<a href="#" onclick="gameCode.populateWithTestData1(); return false">Testdaten #1</a>
+					</li>
+					<li>
+						<a href="#" onclick="gameCode.populateWithTestData2(); return false">Testdaten #2</a>
+					</li>
+					<li>
+						<a href="#" onclick="gameCode.populateWithTestData3(); return false">Testdaten #3</a>
+					</li>
+				</ul>
+			</div>
+			<div id="slider">
+				<input class="bar" type="range" id="rangeinput" value="30" min="10" max="1000" onchange="gameCode.intervalDelay(this.value)" />
+				<span class="highlight"></span>
+
 			</div>
 		</div>
-		-->
+		<canvas id="gameview" height="400" width="800"></canvas>
+		<footer><span class="autor">by Dennis Kronb&uuml;gel</span></footer>
 	</div>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="js/bootstrap.min.js"></script>
 </html>
